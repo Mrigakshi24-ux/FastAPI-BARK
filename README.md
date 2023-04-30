@@ -21,11 +21,11 @@ FastAPI routes:
 
 STEPS TO RUN THE DOCKERFILE
 - Clone the repository
-  git clone 
+  - git clone 
 - Build the docker image
-  docker build -t 'imageName'.
+  - docker build -t 'imageName'.
 - Run the docker image as a container
-  docker run 'imageName'
+  - docker run 'imageName'
   
 After the docker is running succesfully, navigate to the link provided on the terminal. In order to test the web application, provide an input in the text box and click submit to listen to the AI-Generated audio file.
   
