@@ -21,7 +21,7 @@ FastAPI routes:
 
 STEPS TO RUN THE DOCKERFILE
 - Clone the repository
-  - git clone 
+  - git clone https://github.com/Mrigakshi24-ux/FastAPI-BARK.git
 - Build the docker image
   - docker build -t 'imageName'.
 - Run the docker image as a container
