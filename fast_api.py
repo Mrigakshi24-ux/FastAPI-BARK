@@ -1,15 +1,28 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import FileResponse, RedirectResponse
+from typing import Annotated
 import glob
 import os
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from fastapi.staticfiles import StaticFiles
 from pydub import AudioSegment
-from fastapi.responses import StreamingResponse
+import os
+from bark import SAMPLE_RATE, generate_audio
+from IPython.display import Audio
+from scipy.io.wavfile import write as write_wav
+
+def returnAudioFile(text):
+    audio_array = generate_audio(text)
+    #Audio(audio_array, rate=SAMPLE_RATE)
+    # os.makedirs('/static')
+    
+    write_wav("./static/audio.wav", SAMPLE_RATE, audio_array)
+
+
 
 app = FastAPI(debug=True)
-#app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 templates = Jinja2Templates(directory='Templates')
 
 @app.get("/")
@@ -18,24 +31,22 @@ async def root(request: Request):
 
 @app.post("/process")
 async def processing(textInput: str = Form(...)):
-    # return f'{textInput}'
-    url_ = glob.glob(os.path.join('./static', '*.wav'))[0]
-    output_file = './static/demo.mp3'
-    sound = AudioSegment.from_wav(url_)
-    sound.export(output_file, format="mp3")
-    url_ = glob.glob(os.path.join('./static', '*.mp3'))[0]
+    returnAudioFile(textInput)
+    #url_ = glob.glob(os.path.join('.\static', '*.wav'))[0]
 
-    response = RedirectResponse(url = 'demo.mp3')
-    # return FileResponse("demo.mp3", media_type="audio/mp3")
+    # output_file = r'static\demo.mp3'
+
+    # sound = AudioSegment.from_wav(r"\static\audio.wav") 
+    # sound.export(output_file, format='mp3')
+    
+    response = RedirectResponse(url = '/audio')
     return response
 
-
-    # return FileResponse(output_file, media_type="audio/mpeg")
-
-@app.get("/audio")
+@app.post('/audio')
 async def audio(request: Request):
-    return templates.TemplateResponse('audio.html', {'request':request})
-# @app.post("/")
+    return templates.TemplateResponse('audio.html', {'request': request})
+
+
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000)
